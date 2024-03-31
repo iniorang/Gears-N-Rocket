@@ -7,8 +7,9 @@ public class CarController : MonoBehaviour
     public Rigidbody controller;
     public float Accel, reverse, TopSpeed, handling;
     float SpeedInput, HandlingInput;
-    bool isGrounded;
+    bool isGrounded = false;
     public LayerMask groundLayer;
+    [SerializeField] Transform PointTransform;
 
     void Start()
     {
@@ -21,37 +22,44 @@ public class CarController : MonoBehaviour
         HandlingInput = Input.GetAxis("Horizontal");
         SpeedInput = Input.GetAxis("Vertical");
         transform.position = controller.transform.position;
-        RaycastHit hit;
-        isGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
-        transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
     }
 
     void FixedUpdate()
     {
-        if (SpeedInput > 0)
+        RotateCar();
+        if (isGrounded)
         {
-            Forward();
+            controller.drag = 1f;
+            if (Mathf.Abs(SpeedInput) > 0)
+            {
+                Forward();
+            }
+            else if (Mathf.Abs(SpeedInput) < 0)
+            {
+                Reverse();
+            }
+            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(0f, SpeedInput * HandlingInput * handling * Time.deltaTime));
         }
-        else if (SpeedInput < 0)
+        else
         {
-            Reverse();
+            controller.drag = .1f;
         }
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(0f, SpeedInput * HandlingInput * handling * Time.deltaTime));
     }
 
     void Forward()
     {
-        if (isGrounded)
-        {
-            controller.AddForce(transform.forward * SpeedInput * Accel * 1000f);
-        }
+        controller.AddForce(transform.forward * SpeedInput * Accel * 100f);
     }
 
     void Reverse()
     {
-        if (isGrounded)
-        {
-            controller.AddForce(transform.forward * SpeedInput * reverse * 1000f);
-        }
+        controller.AddForce(transform.forward * SpeedInput * reverse * 100f);
+    }
+
+    void RotateCar()
+    {
+        RaycastHit hit;
+        isGrounded = Physics.Raycast(PointTransform.position, -transform.up, out hit, .5f, groundLayer);
+        transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
     }
 }
