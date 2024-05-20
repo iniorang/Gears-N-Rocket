@@ -73,8 +73,8 @@ public class CarController : MonoBehaviour
   [HideInInspector]
   public bool isDrifting;
   [HideInInspector]
-  public bool isTractionLocked;
-  public bool deceleratingCar;
+  bool isTractionLocked;
+  bool deceleratingCar;
   [HideInInspector]
   float steeringAxis;
   [HideInInspector]
@@ -188,7 +188,7 @@ public class CarController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000;
+    carSpeed = 2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60 / 1000;
     localVelocityX = transform.InverseTransformDirection(carRigidbody.velocity).x;
     localVelocityZ = transform.InverseTransformDirection(carRigidbody.velocity).z;
 
@@ -256,74 +256,36 @@ public class CarController : MonoBehaviour
 
   }
 
-  public void TurnLeft()
+  public void Steering(float steerinput)
   {
-    steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
-    if (steeringAxis < -1f)
-    {
-      steeringAxis = -1f;
-    }
-    var steeringAngle = steeringAxis * maxSteeringAngle;
-    frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
-    frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
-  }
-
-  public void TurnRight()
-  {
-    steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
-    if (steeringAxis > 1f)
-    {
-      steeringAxis = 1f;
-    }
-    var steeringAngle = steeringAxis * maxSteeringAngle;
-    frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
-    frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
-  }
-
-  public void ResetSteeringAngle()
-  {
-    if (steeringAxis < 0f)
-    {
-      steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
-    }
-    else if (steeringAxis > 0f)
-    {
-      steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
-    }
-    if (Mathf.Abs(frontLeftCollider.steerAngle) < 1f)
-    {
-      steeringAxis = 0f;
-    }
-    var steeringAngle = steeringAxis * maxSteeringAngle;
-    frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
-    frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
-  }
-
-  public void AiSteering(float steerInput)
-  {
-    if (Mathf.Abs(steerInput) > 0f)
-    {
-      steeringAxis += Time.deltaTime * 10f * steeringSpeed * steerInput;
-      steeringAxis = Mathf.Clamp(steeringAxis, -1f, 1f);
-    }
-    else
+    if (steerinput == 0f)
     {
       if (steeringAxis < 0f)
       {
         steeringAxis += Time.deltaTime * 10f * steeringSpeed;
-        // steeringAxis = Mathf.Clamp(steeringAxis, 0f, 1f);
       }
       else if (steeringAxis > 0f)
       {
         steeringAxis -= Time.deltaTime * 10f * steeringSpeed;
-        // steeringAxis = Mathf.Clamp(steeringAxis, -1f, 0f);
       }
+
+      if (Mathf.Abs(steeringAxis) < 0.1f)
+      {
+        steeringAxis = 0f;
+      }
+    }
+    else
+    {
+
+      steeringAxis = steerinput + (Time.deltaTime * 10f * steeringSpeed);
+      steeringAxis = Mathf.Clamp(steeringAxis, -1f, 1f);
     }
 
     var steeringAngle = steeringAxis * maxSteeringAngle;
     frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
     frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
   }
+
   void AnimateWheelMeshes()
   {
     try
@@ -358,9 +320,8 @@ public class CarController : MonoBehaviour
     }
   }
 
-  public void GoForward()
+  public void MoveCar(float input)
   {
-
     if (Mathf.Abs(localVelocityX) > 2.5f)
     {
       isDrifting = true;
@@ -372,133 +333,129 @@ public class CarController : MonoBehaviour
       DriftCarPS();
     }
 
-    throttleAxis = throttleAxis + (Time.deltaTime * 3f);
-    if (throttleAxis > 1f)
+    // Adjust throttle axis based on input
+    if (input > 0)
     {
-      throttleAxis = 1f;
+      throttleAxis += Time.deltaTime * 3f;
+      throttleAxis = Mathf.Clamp(throttleAxis, 0f, 1f);
     }
-
-    if (localVelocityZ < -1f)
+    else if (input < 0)
     {
-      Brakes();
+      throttleAxis -= Time.deltaTime * 3f;
+      throttleAxis = Mathf.Clamp(throttleAxis, -1f, 0f);
     }
     else
     {
-      if (Mathf.RoundToInt(carSpeed) < maxSpeed)
+      // Decelerate if no input
+      if (throttleAxis != 0f)
       {
+        if (throttleAxis > 0f)
+        {
+          throttleAxis -= Time.deltaTime * 10f;
+        }
+        else if (throttleAxis < 0f)
+        {
+          throttleAxis += Time.deltaTime * 10f;
+        }
+        if (Mathf.Abs(throttleAxis) < 0.15f)
+        {
+          throttleAxis = 0f;
+        }
+      }
+    }
 
-        frontLeftCollider.brakeTorque = 0;
-        frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        frontRightCollider.brakeTorque = 0;
-        frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        rearLeftCollider.brakeTorque = 0;
-        rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        rearRightCollider.brakeTorque = 0;
-        rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+    // Apply throttle or brake based on throttleAxis
+    if (throttleAxis > 0)
+    {
+      // Forward movement
+      if (localVelocityZ < -1f && input > 0)
+      {
+        Brakes();
+      }
+      else if (Mathf.RoundToInt(carSpeed) < maxSpeed)
+      {
+        ApplyMotorTorque(throttleAxis);
       }
       else
       {
-
-        frontLeftCollider.motorTorque = 0;
-        frontRightCollider.motorTorque = 0;
-        rearLeftCollider.motorTorque = 0;
-        rearRightCollider.motorTorque = 0;
+        ThrottleOff();
       }
     }
-  }
-
-
-  public void GoReverse()
-  {
-    if (Mathf.Abs(localVelocityX) > 2.5f)
+    else if (throttleAxis < 0)
     {
-      isDrifting = true;
-      DriftCarPS();
-    }
-    else
-    {
-      isDrifting = false;
-      DriftCarPS();
-    }
-
-    throttleAxis = throttleAxis - (Time.deltaTime * 3f);
-    if (throttleAxis < -1f)
-    {
-      throttleAxis = -1f;
-    }
-
-    if (localVelocityZ > 1f)
-    {
-      Brakes();
-    }
-    else
-    {
-      if (Mathf.Abs(Mathf.RoundToInt(carSpeed)) < maxReverseSpeed)
+      // Reverse movement
+      if (localVelocityZ > 1f && input < 0)
       {
-        frontLeftCollider.brakeTorque = 0;
-        frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        frontRightCollider.brakeTorque = 0;
-        frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        rearLeftCollider.brakeTorque = 0;
-        rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        rearRightCollider.brakeTorque = 0;
-        rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+        Brakes();
+      }
+      else if (Mathf.Abs(Mathf.RoundToInt(carSpeed)) < maxReverseSpeed)
+      {
+        ApplyMotorTorque(throttleAxis);
       }
       else
       {
-        frontLeftCollider.motorTorque = 0;
-        frontRightCollider.motorTorque = 0;
-        rearLeftCollider.motorTorque = 0;
-        rearRightCollider.motorTorque = 0;
+        ThrottleOff();
       }
-    }
-  }
-  public void ThrottleOff()
-  {
-    frontLeftCollider.motorTorque = 0;
-    frontRightCollider.motorTorque = 0;
-    rearLeftCollider.motorTorque = 0;
-    rearRightCollider.motorTorque = 0;
-  }
-
-  public void DecelerateCar()
-  {
-    if (Mathf.Abs(localVelocityX) > 2.5f)
-    {
-      isDrifting = true;
-      DriftCarPS();
     }
     else
     {
-      isDrifting = false;
-      DriftCarPS();
+      // Throttle off
+      ThrottleOff();
     }
+  }
 
+  private void ApplyMotorTorque(float axis)
+  {
+    float motorTorque = accelerationMultiplier * 50f * axis;
+
+    frontLeftCollider.brakeTorque = 0;
+    frontLeftCollider.motorTorque = motorTorque;
+
+    frontRightCollider.brakeTorque = 0;
+    frontRightCollider.motorTorque = motorTorque;
+
+    rearLeftCollider.brakeTorque = 0;
+    rearLeftCollider.motorTorque = motorTorque;
+
+    rearRightCollider.brakeTorque = 0;
+    rearRightCollider.motorTorque = motorTorque;
+  }
+
+  private void Decelerate()
+  {
     if (throttleAxis != 0f)
     {
       if (throttleAxis > 0f)
       {
-        throttleAxis = throttleAxis - (Time.deltaTime * 10f);
+        throttleAxis -= Time.deltaTime * 10f;
       }
       else if (throttleAxis < 0f)
       {
-        throttleAxis = throttleAxis + (Time.deltaTime * 10f);
+        throttleAxis += Time.deltaTime * 10f;
       }
+
       if (Mathf.Abs(throttleAxis) < 0.15f)
       {
         throttleAxis = 0f;
       }
     }
-    carRigidbody.velocity = carRigidbody.velocity * (1f / (1f + (0.025f * decelerationMultiplier)));
+
+    carRigidbody.velocity *= 1f / (1f + (0.025f * decelerationMultiplier));
+    ThrottleOff();
+
+    if (carRigidbody.velocity.magnitude < 0.25f)
+    {
+      carRigidbody.velocity = Vector3.zero;
+      CancelInvoke(nameof(Decelerate));
+    }
+  }
+
+  private void ThrottleOff()
+  {
     frontLeftCollider.motorTorque = 0;
     frontRightCollider.motorTorque = 0;
     rearLeftCollider.motorTorque = 0;
     rearRightCollider.motorTorque = 0;
-    if (carRigidbody.velocity.magnitude < 0.25f)
-    {
-      carRigidbody.velocity = Vector3.zero;
-      CancelInvoke("DecelerateCar");
-    }
   }
 
   public void Brakes()
@@ -507,77 +464,6 @@ public class CarController : MonoBehaviour
     frontRightCollider.brakeTorque = brakeForce;
     rearLeftCollider.brakeTorque = brakeForce;
     rearRightCollider.brakeTorque = brakeForce;
-  }
-
-  public void AiSpeed(float throttleInput)
-  {
-    if (Mathf.Abs(localVelocityX) > 2.5f)
-    {
-      isDrifting = true;
-      DriftCarPS();
-    }
-    else
-    {
-      isDrifting = false;
-      DriftCarPS();
-    }
-
-    if (throttleInput > 0f)
-    {
-      throttleAxis = Mathf.Min(throttleAxis + (Time.deltaTime * 3f), 1f);
-      if (localVelocityZ < -1f)
-      {
-        Brakes();
-      }
-      else
-      {
-        if (Mathf.RoundToInt(carSpeed) < maxSpeed)
-        {
-          frontLeftCollider.brakeTorque = 0;
-          frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          frontRightCollider.brakeTorque = 0;
-          frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          rearLeftCollider.brakeTorque = 0;
-          rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          rearRightCollider.brakeTorque = 0;
-          rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        }
-        else
-        {
-          ThrottleOff();
-        }
-      }
-    }
-    else if (throttleInput < 0f)
-    {
-      throttleAxis = Mathf.Max(throttleAxis - (Time.deltaTime * 3f), -1f);
-      if (localVelocityZ > 1f)
-      {
-        Brakes();
-      }
-      else
-      {
-        if (Mathf.Abs(Mathf.RoundToInt(carSpeed)) < maxReverseSpeed)
-        {
-          frontLeftCollider.brakeTorque = 0;
-          frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          frontRightCollider.brakeTorque = 0;
-          frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          rearLeftCollider.brakeTorque = 0;
-          rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-          rearRightCollider.brakeTorque = 0;
-          rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
-        }
-        else
-        {
-          ThrottleOff();
-        }
-      }
-    }
-    else
-    {
-      ThrottleOff();
-    }
   }
 
   public void Handbrake()
@@ -726,4 +612,5 @@ public class CarController : MonoBehaviour
       driftingAxis = 0f;
     }
   }
+
 }

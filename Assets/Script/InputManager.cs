@@ -1,42 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using System.Linq;
 
 public class InputManager : MonoBehaviour
 {
+    // Kontrol pemain atau pemain
     internal enum Driver
     {
         ai, player
     }
     [SerializeField] Driver mode = Driver.player;
     CarController car;
-    [SerializeField, Range(-1, 1)] private float inputX, inputY;
-
-    //Time and Lap
-    public float BestLapTime { get; private set; } = Mathf.Infinity;
-    public float LastLapTime { get; private set; } = 0f;
-    public float CurrentLapTime { get; private set; } = 0f;
-    public int CurrentLap { get; private set; } = 0;
-
-    private float lapTimer;
-
-    //Cekpoint
-    private int lastCheckPassed = 0;
-    private Transform checkpointParent;
-    private int checkCount;
-    private int checkLayer;
-
+    [SerializeField]Vector2 inputVector = Vector2.zero;
 
     private void Awake()
     {
         car = GetComponent<CarController>();
-        FindCheckpoint();
+    
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        CurrentLapTime = lapTimer > 0 ? Time.time - lapTimer : 0;
-
         //Change AI or Player Driving this vehicle
         switch (mode)
         {
@@ -51,100 +37,15 @@ public class InputManager : MonoBehaviour
 
     void player()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            car.CancelInvoke("DecelerateCar");
-            car.deceleratingCar = false;
-            car.GoForward();
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            car.CancelInvoke("DecelerateCar");
-            car.deceleratingCar = false;
-            car.GoReverse();
-        }
+        inputVector.x = Input.GetAxis("Horizontal");
+        inputVector.y = Input.GetAxis("Vertical");
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            car.TurnLeft();
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            car.TurnRight();
-        }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            car.CancelInvoke("DecelerateCar");
-            car.deceleratingCar = false;
-            car.Handbrake();
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            car.RecoverTraction();
-        }
-        if (!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
-        {
-            car.ThrottleOff();
-        }
-        if (!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.Space) && !car.deceleratingCar)
-        {
-            car.InvokeRepeating("DecelerateCar", 0f, 0.1f);
-            car.deceleratingCar = true;
-        }
-        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-        {
-            car.ResetSteeringAngle();
-        }
-        // inputX = Input.GetAxis("Horizontal");
-        // inputY = Input.GetAxis("Vertical");
-        // car.AiSteering(inputX);
-        // car.AiSpeed(inputY);
+        car.Steering(inputVector.x);
+        car.MoveCar(inputVector.y);
     }
     void Ai()
     {
-        car.AiSteering(inputX);
-        car.AiSpeed(inputY);
-    }
-
-    void FindCheckpoint()
-    {
-        checkpointParent = GameObject.Find("Checkpoint").transform;
-        checkCount = checkpointParent.childCount;
-        checkLayer = LayerMask.NameToLayer("Checkpoint");
-    }
-
-    void StartLap()
-    {
-        Debug.Log("Start New Lap");
-        CurrentLap++;
-        lastCheckPassed = 1;
-        lapTimer = Time.time;
-    }
-
-    void EndLap()
-    {
-        LastLapTime = Time.time - lapTimer;
-        BestLapTime = Mathf.Min(LastLapTime, BestLapTime);
-        Debug.Log("Lap " + CurrentLap + " Time: " + LastLapTime + " Best Time: " + BestLapTime);
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.layer != checkLayer) return;
-
-        if (other.gameObject.name == "1")
-        {
-            if (lastCheckPassed == checkCount)
-            {
-                EndLap();
-            }
-            if (CurrentLap == 0 || lastCheckPassed == checkCount)
-            {
-                StartLap();
-            }
-            return;
-        }
-
-        if (other.gameObject.name == (lastCheckPassed + 1).ToString()) lastCheckPassed++;
+        car.Steering(inputVector.x);
+        // car.AiSpeed(inputVector.y);
     }
 }
