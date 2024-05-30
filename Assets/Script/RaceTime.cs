@@ -71,4 +71,6 @@ public class RaceTime : MonoBehaviour
             Debug.LogWarning("Checkpoint");
         }
     }
+
+
 }

@@ -4,6 +4,7 @@ using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 public class InputManager : MonoBehaviour
 {
@@ -14,8 +15,14 @@ public class InputManager : MonoBehaviour
     }
     [SerializeField] Driver mode = Driver.Player;
     [SerializeField] Vector2 inputVector = Vector2.zero;
-    CarController car;
 
+    //Inventori
+
+    //Reference
+    CarController car;
+    PowerUpManager pm;
+
+    //AI
     [SerializeField] WaypoinNode waypoints;
     [SerializeField] Transform currentNode;
     [SerializeField] List<Transform> nodes = new List<Transform>();
@@ -25,14 +32,16 @@ public class InputManager : MonoBehaviour
     private void Awake()
     {
         car = GetComponent<CarController>();
+        pm = GetComponent<PowerUpManager>();
     }
 
-    private void Start() {
+    private void Start()
+    {
         waypoints = GameObject.FindGameObjectWithTag("Path").GetComponent<WaypoinNode>();
         nodes = waypoints.node;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         //Change AI or Player Driving this vehicle
         switch (mode)
@@ -50,6 +59,13 @@ public class InputManager : MonoBehaviour
     {
         inputVector.x = Input.GetAxis("Horizontal");
         inputVector.y = Input.GetAxis("Vertical");
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            pm.UseSelectedPowerUp();
+        }
+        if (Input.GetKeyDown(KeyCode.Q)){
+            pm.NextPowerUp();
+        }
 
         car.Steering(inputVector.x);
         car.MoveCar(inputVector.y);
@@ -58,7 +74,6 @@ public class InputManager : MonoBehaviour
     {
         calculateDistance();
         inputVector.x = AiSteer();
-        inputVector.y = .5f;
         car.MoveCar(inputVector.y);
         car.Steering(inputVector.x);
     }
@@ -71,12 +86,6 @@ public class InputManager : MonoBehaviour
         return inputVector.x;
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        if (currentNode != null)
-            Gizmos.DrawSphere(currentNode.transform.position, 0.5f);
-    }
 
     private void calculateDistance()
     {
@@ -88,7 +97,7 @@ public class InputManager : MonoBehaviour
             float currentDistance = diff.magnitude;
             if (currentDistance < distance)
             {
-                distance = currentDistance; // Update the minimum distance
+                distance = currentDistance;
                 currentNode = nodes[i];
             }
         }
