@@ -5,7 +5,7 @@ using UnityEngine;
 public class PowerUpManager : MonoBehaviour
 {
     public int slot = 3;
-    [SerializeField] PowerBox.PowerType[] powerSlot;
+    [SerializeField] public PowerBox.PowerType[] powerSlot;
     [SerializeField] int selected = 0;
     
     // Start is called before the first frame update

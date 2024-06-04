@@ -10,11 +10,12 @@ public class PowerBox : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         if (other.TryGetComponent<PowerUpManager>(out var pm))
         {
-            pm.GivePowerUp(selectedType);
+            Invoke(nameof(RespawnBox), 5f);
             GetComponent<Renderer>().enabled = false;
             GetComponent<Collider>().enabled = false;
-            Invoke(nameof(RespawnBox), 5f);
+            pm.GivePowerUp(selectedType);
         }
+            Debug.Log("Hit");
     }
 
     private void RespawnBox()
