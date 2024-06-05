@@ -2,25 +2,22 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-#pragma warning disable 649
-namespace UnityStandardAssets.Vehicles.Car
+public class SkidTrail : MonoBehaviour
 {
-    public class SkidTrail : MonoBehaviour
+    [SerializeField] private float m_PersistTime;
+
+
+    private IEnumerator Start()
     {
-        [SerializeField] private float m_PersistTime;
-
-
-        private IEnumerator Start()
+        while (true)
         {
-			while (true)
-            {
-                yield return null;
+            yield return null;
 
-                if (transform.parent.parent == null)
-                {
-					Destroy(gameObject, m_PersistTime);
-                }
+            if (transform.parent.parent == null)
+            {
+                Destroy(gameObject, m_PersistTime);
             }
         }
     }
 }
+

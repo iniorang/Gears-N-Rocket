@@ -1,27 +1,22 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.Vehicles.Car
+public class Mudguard : MonoBehaviour
 {
-    // this script is specific to the supplied Sample Assets car, which has mudguards over the front wheels
-    // which have to turn with the wheels when steering is applied.
+    public CarController carController; // car controller to get the steering angle
 
-    public class Mudguard : MonoBehaviour
+    private Quaternion m_OriginalRotation;
+
+
+    private void Start()
     {
-        public CarController carController; // car controller to get the steering angle
-
-        private Quaternion m_OriginalRotation;
-
-
-        private void Start()
-        {
-            m_OriginalRotation = transform.localRotation;
-        }
+        m_OriginalRotation = transform.localRotation;
+    }
 
 
-        private void Update()
-        {
-            transform.localRotation = m_OriginalRotation*Quaternion.Euler(0, carController.CurrentSteerAngle, 0);
-        }
+    private void Update()
+    {
+        transform.localRotation = m_OriginalRotation * Quaternion.Euler(0, carController.CurrentSteerAngle, 0);
     }
 }
+
