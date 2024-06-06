@@ -17,6 +17,10 @@ public class UIController : MonoBehaviour
     private float MaxLap;
     private float CurrentPos;
     private float MaxOppent;
+
+    void Start(){
+        UpdateUI = GameObject.FindAnyObjectByType<RaceTime>();
+    }
     
     // Update is called once per frame
     void Update()
@@ -35,6 +39,12 @@ public class UIController : MonoBehaviour
         {
             CurrentTime = UpdateUI.CurrentLapTime;
             CurrentTimeUi.text = $"{(int)CurrentTime / 60} : {CurrentTime % 60:00.000}";
+        }
+
+        if(UpdateUI.MaxLap != MaxLap)
+        {
+            MaxLap = UpdateUI.MaxLap;
+            MaxLapUi.text = $"{MaxLap}";
         }
     }
 }

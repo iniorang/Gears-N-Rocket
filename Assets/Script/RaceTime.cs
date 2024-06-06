@@ -9,6 +9,7 @@ public class RaceTime : MonoBehaviour
     public float LastLapTime { get; private set; } = 0f;
     public float CurrentLapTime { get; private set; } = 0f;
     public int CurrentLap { get; private set; } = 0;
+    public int MaxLap { get; private set; } = 3;
 
     private float lapTimer;
 
@@ -18,11 +19,13 @@ public class RaceTime : MonoBehaviour
     private int checkCount;
     private int checkLayer;
 
+    GameObject Player;
     void Awake()
     {
         checkpointParent = GameObject.Find("Checkpoint").transform;
         checkCount = checkpointParent.childCount;
         checkLayer = LayerMask.NameToLayer("Checkpoint");
+        Player = GameObject.FindWithTag("Player");
     }
 
     // Update is called once per frame
@@ -44,6 +47,7 @@ public class RaceTime : MonoBehaviour
         LastLapTime = Time.time - lapTimer;
         BestLapTime = Mathf.Min(LastLapTime, BestLapTime);
         Debug.Log("Lap " + CurrentLap + " Time: " + LastLapTime + " Best Time: " + BestLapTime);
+        
     }
 
     void OnTriggerEnter(Collider other)
@@ -66,7 +70,8 @@ public class RaceTime : MonoBehaviour
             return;
         }
 
-        if (other.gameObject.name == (lastCheckPassed + 1).ToString()) {
+        if (other.gameObject.name == (lastCheckPassed + 1).ToString())
+        {
             lastCheckPassed++;
             Debug.LogWarning("Checkpoint");
         }
