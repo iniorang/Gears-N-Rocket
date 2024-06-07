@@ -287,8 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d963df58504b69045b8d0d746ba6f777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CautiousSpeedFactor: 1
-  m_CautiousMaxAngle: 43
+  m_CautiousSpeedFactor: 0.533
+  m_CautiousMaxAngle: 180
   m_CautiousMaxDistance: 100
   m_CautiousAngularVelocityFactor: 30
   m_SteerSensitivity: 0.01
@@ -317,9 +317,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circuit: {fileID: 0}
   lookAheadForTargetOffset: 5
-  lookAheadForTargetFactor: 0.5
-  lookAheadForSpeedOffset: 10
-  lookAheadForSpeedFactor: 0.8
+  lookAheadForTargetFactor: 0.8
+  lookAheadForSpeedOffset: 8
+  lookAheadForSpeedFactor: 0.5
   progressStyle: 0
   pointToPointThreshold: 4
   target: {fileID: 3826652346189783649}
