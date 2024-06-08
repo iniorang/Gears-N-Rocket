@@ -21,11 +21,11 @@ public class Driver : MonoBehaviour
         switch (type)
         {
             case TypeDriver.Player:
-                this.gameObject.tag = "Player";
+                gameObject.tag = "Player";
                 this.AddComponent<RaceTime>();
                 break;
             case TypeDriver.Ai:
-                this.gameObject.tag = "AI";
+                gameObject.tag = "AI";
                 break;
         }
     }
