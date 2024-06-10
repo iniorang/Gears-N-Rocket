@@ -6,18 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene/Testing.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
     path: Assets/Scenes/CarSelection.unity
     guid: 7f26f56606e19ab4496dff451b09c823
   - enabled: 1
-    path: Assets/Scenes/Raceway/Raceway.unity
+    path: Assets/Scenes/Track Selection.unity
+    guid: 9ad3e88a4163ab9489b8e03779c80aba
+  - enabled: 1
+    path: Assets/Scenes/Raceway.unity
     guid: ccf6d3c106ba63648b885e87697fd5b6
   - enabled: 1
-    path: Assets/Scenes/Raceway/Oval Track.unity
+    path: Assets/Scenes/Oval Track.unity
     guid: 696f02b34154e8d44aa263f520757452
   - enabled: 1
-    path: Assets/Scenes/City/City1.unity
+    path: Assets/Scenes/City1.unity
     guid: 73d0aef4e20dfd74f979c3defdce8350
   m_configObjects: {}
