@@ -7,6 +7,10 @@ public class PowerUpManager : MonoBehaviour
     public int slot = 3;
     [SerializeField] public PowerBox.PowerType[] powerSlot;
     [SerializeField] int selected = 0;
+    public Transform launchPosition;
+
+    //Powerup prefab
+    public GameObject rocketPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -46,7 +50,7 @@ public class PowerUpManager : MonoBehaviour
             switch (pt)
             {
                 case PowerBox.PowerType.Rocket:
-                    Debug.Log("Launch Rocket");
+                    Instantiate(rocketPrefab, launchPosition.position, transform.rotation);
                     break;
                 case PowerBox.PowerType.Mine:
                     Debug.Log("Launch Mine");

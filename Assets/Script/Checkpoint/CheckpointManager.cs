@@ -1,147 +1,272 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class CheckpointManager : MonoBehaviour
 {
-    public static CheckpointManager Instance;
+    //     public static CheckpointManager Instance;
 
-    private Dictionary<GameObject, int> checkpointPositions = new Dictionary<GameObject, int>();
-    private Dictionary<GameObject, int> lapCounts = new Dictionary<GameObject, int>();
-    private Dictionary<GameObject, LapTimer> lapTimers = new Dictionary<GameObject, LapTimer>();
+    //     private Dictionary<GameObject, int> checkpointPositions = new Dictionary<GameObject, int>();
+    //     private Dictionary<GameObject, int> lapCounts = new Dictionary<GameObject, int>();
+    //     private Dictionary<GameObject, LapTimer> lapTimers = new Dictionary<GameObject, LapTimer>();
 
-    private List<Transform> checkpoints = new List<Transform>();
-    private int checkpointLayer;
+    //     private List<Transform> checkpoints = new List<Transform>();
+    //     private int checkpointLayer;
 
-    private void Awake()
+    //     private void Awake()
+    //     {
+    //         if (Instance == null)
+    //         {
+    //             Instance = this;
+    //             DontDestroyOnLoad(gameObject);  // Persist through scene loads
+    //         }
+    //         else
+    //         {
+    //             Destroy(gameObject);
+    //         }
+    //     }
+
+    //     private void Start()
+    //     {
+    //         RegisterCheckpoints();
+    //         RegisterAllCars();
+    //         SetCheckpointLayer();
+    //     }
+
+    //     private void RegisterCheckpoints()
+    //     {
+    //         GameObject[] checkpointObjects = GameObject.FindGameObjectsWithTag("Checkpoint");
+    //         foreach (GameObject checkpointObject in checkpointObjects)
+    //         {
+    //             checkpoints.Add(checkpointObject.transform);
+    //         }
+    //     }
+
+    //     private void RegisterAllCars()
+    //     {
+    //         RegisterCars("Player");
+    //         RegisterCars("AI");
+    //     }
+
+    //     private void SetCheckpointLayer()
+    //     {
+    //         if (checkpoints.Count > 0)
+    //         {
+    //             checkpointLayer = checkpoints[0].gameObject.layer;
+    //         }
+    //     }
+
+    //     private void RegisterCars(string tag)
+    //     {
+    //         foreach (GameObject car in GameObject.FindGameObjectsWithTag(tag))
+    //         {
+    //             RegisterCar(car);
+    //         }
+    //     }
+
+    //     private void RegisterCar(GameObject car)
+    //     {
+    //         if (!checkpointPositions.ContainsKey(car))
+    //         {
+    //             checkpointPositions[car] = 0;
+    //             lapCounts[car] = 0;  // Start from lap 0
+    //             lapTimers[car] = car.GetComponent<LapTimer>();
+    //         }
+    //     }
+
+    //     public void CheckpointReached(GameObject car, int checkpointIndex)
+    //     {
+    //         if (!checkpointPositions.ContainsKey(car))
+    //         {
+    //             RegisterCar(car);
+    //         }
+
+    //         int expectedCheckpointIndex = (checkpointPositions[car] + 1) % checkpoints.Count;
+    //         if (checkpointIndex == expectedCheckpointIndex)
+    //         {
+    //             checkpointPositions[car] = checkpointIndex;
+
+    //             if (checkpointIndex == 0)
+    //             {
+    //                 lapCounts[car]++;
+    //                 lapTimers[car].OnLapCompleted();
+    //             }
+
+    //             UpdatePositions();
+    //         }
+    //     }
+
+    //     private void UpdatePositions()
+    //     {
+    //         List<GameObject> cars = new List<GameObject>(checkpointPositions.Keys);
+    //         cars.Sort((car1, car2) =>
+    //         {
+    //             int lapCountComparison = lapCounts[car2].CompareTo(lapCounts[car1]);
+    //             if (lapCountComparison == 0)
+    //             {
+    //                 return checkpointPositions[car2].CompareTo(checkpointPositions[car1]);
+    //             }
+    //             return lapCountComparison;
+    //         });
+
+    //         for (int i = 0; i < cars.Count; i++)
+    //         {
+    //             Debug.Log($"Position {i + 1}: {cars[i].name} - Lap: {lapCounts[cars[i]]}, Checkpoint: {checkpointPositions[cars[i]]}");
+    //         }
+    //     }
+
+    //     public List<GameObject> GetSortedCars()
+    //     {
+    //         List<GameObject> cars = new List<GameObject>(checkpointPositions.Keys);
+    //         cars.Sort((car1, car2) =>
+    //         {
+    //             int lapCountComparison = lapCounts[car2].CompareTo(lapCounts[car1]);
+    //             if (lapCountComparison == 0)
+    //             {
+    //                 return checkpointPositions[car2].CompareTo(checkpointPositions[car1]);
+    //             }
+    //             return lapCountComparison;
+    //         });
+    //         return cars;
+    //     }
+
+    //     public int GetCheckpointIndex(Transform checkpoint)
+    //     {
+    //         if (int.TryParse(checkpoint.gameObject.name, out int checkpointIndex))
+    //         {
+    //             return checkpointIndex;
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError("Checkpoint name is not a valid integer: " + checkpoint.gameObject.name);
+    //             return -1;
+    //         }
+    //     }
+
+    //     public int GetCheckpointCount()
+    //     {
+    //         return checkpoints.Count;
+    //     }
+
+    //     public bool IsCheckpointLayer(int layer)
+    //     {
+    //         return layer == checkpointLayer;
+    //     }
+
+    public List<Transform> checkpoints; // List checkpoint
+    private List<Transform> players = new List<Transform>(); // List pemain
+    private List<Transform> enemies = new List<Transform>(); // List musuh
+    public Transform leader; // Pemimpin balap
+    public bool raceOver = false; // Status balapan selesai
+
+    void Start()
     {
-        if (Instance == null)
+        StartCoroutine(StartRace());
+    }
+
+    IEnumerator StartRace()
+    {
+        yield return new WaitForSeconds(0.5f); // Delay sebelum memulai balapan
+
+        FindPlayersAndEnemies();
+
+        while (!raceOver)
         {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
+            UpdateLeader();
+            CheckRaceStatus();
+            yield return null;
         }
     }
 
-    private void Start()
+    void FindPlayersAndEnemies()
     {
-        // Mencari semua checkpoint di scene
-        GameObject[] checkpointObjects = GameObject.FindGameObjectsWithTag("Checkpoint");
-        foreach (GameObject checkpointObject in checkpointObjects)
+        GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject playerObject in playerObjects)
         {
-            checkpoints.Add(checkpointObject.transform);
+            players.Add(playerObject.transform);
         }
 
-        // Mendaftarkan semua mobil di scene
-        RegisterCars("Player");
-        RegisterCars("AI");
-
-        // Set layer for checkpoints
-        if (checkpoints.Count > 0)
+        GameObject[] enemyObjects = GameObject.FindGameObjectsWithTag("AI");
+        foreach (GameObject enemyObject in enemyObjects)
         {
-            checkpointLayer = checkpoints[0].gameObject.layer;
+            enemies.Add(enemyObject.transform);
         }
     }
 
-    private void RegisterCars(string tag)
+    void UpdateLeader()
     {
-        foreach (GameObject car in GameObject.FindGameObjectsWithTag(tag))
-        {
-            RegisterCar(car);
-        }
-    }
+        float closestDistance = Mathf.Infinity;
+        Transform closestEntity = null;
 
-    private void RegisterCar(GameObject car)
-    {
-        if (!checkpointPositions.ContainsKey(car))
+        foreach (Transform player in players)
         {
-            checkpointPositions[car] = 0;
-            lapCounts[car] = 0;
-            lapTimers[car] = car.GetComponent<LapTimer>();
-        }
-    }
-
-    public void CheckpointReached(GameObject car, int checkpointIndex)
-    {
-        if (!checkpointPositions.ContainsKey(car))
-        {
-            RegisterCar(car);
-        }
-
-        if (checkpointIndex == (checkpointPositions[car] + 1) % checkpoints.Count)
-        {
-            checkpointPositions[car] = checkpointIndex;
-
-            if (checkpointIndex == 0)
+            float distanceToLeader = DistanceToLeader(player.position);
+            if (distanceToLeader < closestDistance)
             {
-                lapCounts[car]++;
-                lapTimers[car].OnLapCompleted();
+                closestDistance = distanceToLeader;
+                closestEntity = player;
             }
-
-            UpdatePositions();
         }
-    }
 
-    private void UpdatePositions()
-    {
-        List<GameObject> cars = new List<GameObject>(checkpointPositions.Keys);
-        cars.Sort((car1, car2) =>
+        foreach (Transform enemy in enemies)
         {
-            int lapCountComparison = lapCounts[car2].CompareTo(lapCounts[car1]);
-            if (lapCountComparison == 0)
+            float distanceToLeader = DistanceToLeader(enemy.position);
+            if (distanceToLeader < closestDistance)
             {
-                return checkpointPositions[car2].CompareTo(checkpointPositions[car1]);
+                closestDistance = distanceToLeader;
+                closestEntity = enemy;
             }
-            return lapCountComparison;
-        });
-
-        for (int i = 0; i < cars.Count; i++)
-        {
-            Debug.Log($"Position {i + 1}: {cars[i].name}");
         }
 
-        for (int i = 0; i < cars.Count; i++)
-        {
-            Debug.Log($"{cars[i].name} - Lap: {lapCounts[cars[i]]}, Checkpoint Index: {checkpointPositions[cars[i]]}");
-        }
+        leader = closestEntity;
     }
 
-    public List<GameObject> GetSortedCars()
+    float DistanceToLeader(Vector3 position)
     {
-        List<GameObject> cars = new List<GameObject>(checkpointPositions.Keys);
-        cars.Sort((car1, car2) =>
+        float distance = 0f;
+
+        for (int i = 0; i < checkpoints.Count; i++)
         {
-            int lapCountComparison = lapCounts[car2].CompareTo(lapCounts[car1]);
-            if (lapCountComparison == 0)
+            if (i == 0)
             {
-                return checkpointPositions[car2].CompareTo(checkpointPositions[car1]);
+                distance += Vector3.Distance(position, checkpoints[i].position);
             }
-            return lapCountComparison;
-        });
-        return cars;
-    }
-
-    public int GetCheckpointIndex(Transform checkpoint)
-    {
-        if (int.TryParse(checkpoint.gameObject.name, out int checkpointIndex))
-        {
-            return checkpointIndex;
+            else
+            {
+                float checkpointDistance = Vector3.Distance(checkpoints[i].position, checkpoints[i - 1].position);
+                distance += checkpointDistance;
+                if (leader != null && leader.position == checkpoints[i].position)
+                {
+                    break;
+                }
+            }
         }
-        else
+
+        return distance;
+    }
+
+    void CheckRaceStatus()
+    {
+        foreach (Transform player in players)
         {
-            Debug.LogError("Checkpoint name is not a valid integer: " + checkpoint.gameObject.name);
-            return -1;
+            float distanceToFinish = DistanceToLeader(player.position);
+            if (distanceToFinish < 1f) // Jarak ke garis finish
+            {
+                raceOver = true;
+                Debug.Log("Player Wins!");
+                return;
+            }
         }
-    }
 
-    public int GetCheckpointCount()
-    {
-        return checkpoints.Count;
-    }
-
-    public bool IsCheckpointLayer(int layer)
-    {
-        return layer == checkpointLayer;
+        foreach (Transform enemy in enemies)
+        {
+            float distanceToFinish = DistanceToLeader(enemy.position);
+            if (distanceToFinish < 1f && enemy == leader) // Jarak ke garis finish dan pemimpin
+            {
+                raceOver = true;
+                Debug.Log("Enemy Wins!");
+                return;
+            }
+        }
     }
 }

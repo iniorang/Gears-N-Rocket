@@ -10,9 +10,9 @@ public class PosDisplay : MonoBehaviour
 
     private void Update()
     {
-        List<GameObject> sortedCars = CheckpointManager.Instance.GetSortedCars();
-        int playerPosition = sortedCars.IndexOf(GameObject.FindGameObjectWithTag("Player")) + 1;
-        positionText.text = playerPosition.ToString();
-        maxCarOnScene.text = sortedCars.Count.ToString();
+        // List<GameObject> sortedCars = CheckpointManager.Instance.GetSortedCars();
+        // int playerPosition = sortedCars.IndexOf(GameObject.FindGameObjectWithTag("Player")) + 1;
+        // positionText.text = playerPosition.ToString();
+        // maxCarOnScene.text = sortedCars.Count.ToString();
     }
 }

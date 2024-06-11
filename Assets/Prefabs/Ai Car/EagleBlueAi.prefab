@@ -4969,6 +4969,7 @@ GameObject:
   - component: {fileID: 2972598439125957786}
   - component: {fileID: 2656073513410349617}
   - component: {fileID: 7345749155310077572}
+  - component: {fileID: 2399449039470112153}
   m_Layer: 0
   m_Name: EagleBlueAi
   m_TagString: AI
@@ -5170,6 +5171,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.85, y: 0.93, z: 4.34}
   m_Center: {x: 0, y: 0.85, z: -0.018977284}
+--- !u!114 &2399449039470112153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826618350077185954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d19304113ad89345b594284b937dcf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1827465017838277376
 GameObject:
   m_ObjectHideFlags: 0

@@ -713,6 +713,7 @@ GameObject:
   - component: {fileID: 1914141347273826330}
   - component: {fileID: -578760636586080114}
   - component: {fileID: 851943880160996537}
+  - component: {fileID: 4119919568948580274}
   m_Layer: 0
   m_Name: EagleGrayAi
   m_TagString: AI
@@ -914,6 +915,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.85, y: 0.93, z: 4.34}
   m_Center: {x: 0, y: 0.85, z: -0.018977284}
+--- !u!114 &4119919568948580274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3644674697700936075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d19304113ad89345b594284b937dcf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3757965040748292305
 GameObject:
   m_ObjectHideFlags: 0

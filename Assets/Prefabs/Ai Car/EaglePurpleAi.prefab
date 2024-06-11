@@ -433,6 +433,7 @@ GameObject:
   - component: {fileID: 3275126312480244684}
   - component: {fileID: -1014680020911530483}
   - component: {fileID: 8750601744276648823}
+  - component: {fileID: 2005508330444094770}
   m_Layer: 0
   m_Name: EaglePurpleAi
   m_TagString: AI
@@ -634,6 +635,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.85, y: 0.93, z: 4.34}
   m_Center: {x: 0, y: 0.85, z: -0.018977284}
+--- !u!114 &2005508330444094770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640099664431819958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d19304113ad89345b594284b937dcf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1696851470449653694
 GameObject:
   m_ObjectHideFlags: 0

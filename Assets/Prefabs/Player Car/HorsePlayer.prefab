@@ -131,6 +131,8 @@ GameObject:
   - component: {fileID: 3770326502519522137}
   - component: {fileID: 7538448756380618680}
   - component: {fileID: -4629227332626700994}
+  - component: {fileID: -7804009688751422960}
+  - component: {fileID: 7972434955474332383}
   m_Layer: 0
   m_Name: HorsePlayer
   m_TagString: Player
@@ -343,6 +345,34 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.0548706, y: 1.2321081, z: 5.1141205}
   m_Center: {x: -0.0071411133, y: 0.8561318, z: 0.06972504}
+--- !u!114 &-7804009688751422960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112635917417274007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d19304113ad89345b594284b937dcf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+--- !u!114 &7972434955474332383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112635917417274007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12f839f24c8a24d4cade46f084eb7088, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slot: 3
+  powerSlot: 
+  selected: 0
 --- !u!1 &1631032013723821414
 GameObject:
   m_ObjectHideFlags: 0
