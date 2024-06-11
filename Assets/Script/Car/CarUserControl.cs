@@ -7,14 +7,28 @@ namespace UnityStandardAssets.Vehicles.Car
     public class CarUserControl : MonoBehaviour
     {
         private CarController m_Car; // the car controller we want to use
-
+        private PowerUpManager powerUpManager;
 
         private void Awake()
         {
-            // get the car controller
             m_Car = GetComponent<CarController>();
+            powerUpManager = GetComponent<PowerUpManager>();
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                powerUpManager.UseSelectedPowerUp();
+            }
+
+            // Memilih power-up yang dimiliki untuk diluncurkan
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                // Ganti indeks power-up yang dipilih di PowerUpManager
+                powerUpManager.NextPowerUp();
+            }
+        }
 
         private void FixedUpdate()
         {
