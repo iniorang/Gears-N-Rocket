@@ -44,13 +44,16 @@ public class PowerUpManager : MonoBehaviour
 
     public void UsePowerUp(int index)
     {
+        Vector3 xyz = new Vector3(0, 0, 0);
+        Quaternion rotation = Quaternion.Euler(xyz);
+
         if (index >= 0 && index < slot && powerSlot[index] != PowerBox.PowerType.None)
         {
             PowerBox.PowerType pt = powerSlot[index];
             switch (pt)
             {
                 case PowerBox.PowerType.Rocket:
-                    Instantiate(rocketPrefab, launchPosition.position, transform.rotation);
+                    Instantiate(rocketPrefab, launchPosition.position, launchPosition.rotation);
                     break;
                 case PowerBox.PowerType.Mine:
                     Debug.Log("Launch Mine");

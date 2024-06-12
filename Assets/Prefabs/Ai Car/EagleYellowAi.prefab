@@ -5830,6 +5830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d19304113ad89345b594284b937dcf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
 --- !u!1 &4117766581918821643
 GameObject:
   m_ObjectHideFlags: 0
