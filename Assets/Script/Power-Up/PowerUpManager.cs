@@ -9,8 +9,9 @@ public class PowerUpManager : MonoBehaviour
     [SerializeField] int selected = 0;
     public Transform launchPosition;
 
-    //Powerup prefab
+    // Power-up prefabs
     public GameObject rocketPrefab;
+    public GameObject minePrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -44,9 +45,6 @@ public class PowerUpManager : MonoBehaviour
 
     public void UsePowerUp(int index)
     {
-        Vector3 xyz = new Vector3(0, 0, 0);
-        Quaternion rotation = Quaternion.Euler(xyz);
-
         if (index >= 0 && index < slot && powerSlot[index] != PowerBox.PowerType.None)
         {
             PowerBox.PowerType pt = powerSlot[index];
@@ -56,10 +54,10 @@ public class PowerUpManager : MonoBehaviour
                     Instantiate(rocketPrefab, launchPosition.position, launchPosition.rotation);
                     break;
                 case PowerBox.PowerType.Mine:
-                    Debug.Log("Launch Mine");
+                    Instantiate(minePrefab, launchPosition.position - new Vector3(0, .5f, 10f), launchPosition.rotation);
                     break;
                 case PowerBox.PowerType.Repair:
-                    Debug.Log("Launch Mine");
+                    Debug.Log("Launch Repair");
                     break;
                 case PowerBox.PowerType.Shield:
                     Debug.Log("Activate Shield");
@@ -83,5 +81,4 @@ public class PowerUpManager : MonoBehaviour
         selected = (selected + 1) % slot;
         Debug.Log($"Selected power-up slot: {selected + 1}");
     }
-
 }

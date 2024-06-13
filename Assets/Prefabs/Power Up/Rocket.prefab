@@ -101,10 +101,13 @@ MonoBehaviour:
   damage: 10
   explosionEffect: {fileID: 4914716930404006884, guid: aed12c224fbc8704d8eaa07a52e88f44,
     type: 3}
+  launchSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
+  explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
   lifetime: 10
   speed: 100
   explosionForce: 500
   explosionRadius: 5
+  scoreValue: 100
 --- !u!54 &6600489514670986557
 Rigidbody:
   m_ObjectHideFlags: 0

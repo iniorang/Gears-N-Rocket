@@ -9,46 +9,54 @@ public class Mine : MonoBehaviour
     public GameObject explosionEffect; // Efek ledakan
     public AudioClip explosionSound; // Suara ledakan
     public float slowDuration = 3f; // Durasi pemain atau musuh melambat
-    public float slowAmount = 0.5f; // Jumlah pelambatan (0.5 berarti kecepatan menjadi 50%)
+    public float slowAmount = 0.5f; // Pengurangan kecepatan (50%)
     public float bounceForce = 500f; // Gaya pantulan
+    public int scoreValue = 100; // Nilai skor yang diberikan saat mengenai musuh
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("AI"))
+        // Buat efek ledakan di lokasi tabrakan
+        Instantiate(explosionEffect, transform.position, Quaternion.identity);
+
+        // Mainkan suara ledakan
+        AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+
+        // Terapkan pelambatan dan pantulan
+        if (other.CompareTag("AI") || other.CompareTag("Player"))
         {
-            // Buat efek ledakan di lokasi tabrakan
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-
-            // Mainkan suara ledakan
-            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
-
-            // Ambil komponen Health dari objek yang ditabrak
-            if (other.TryGetComponent<Health>(out var health))
+            if (other.CompareTag("AI"))
             {
-                health.TakeDamage(damage);
+                // Tambahkan skor jika mengenai musuh
+                FindObjectOfType<ShootingGame>().AddScore(scoreValue);
             }
 
             // Ambil komponen Rigidbody dari objek yang ditabrak
-            if (other.TryGetComponent<Rigidbody>(out var rb))
+            Rigidbody rb = other.GetComponent<Rigidbody>();
+            if (rb != null)
             {
-                rb.AddExplosionForce(bounceForce, transform.position, 5f);
-            }
+                // Terapkan gaya pantulan ke objek
+                rb.AddExplosionForce(bounceForce, transform.position, 1f);
 
-            // Perlambat objek yang ditabrak
-            if (other.TryGetComponent<CarController>(out var carController))
-            {
-                StartCoroutine(SlowDown(carController));
+                // Terapkan pelambatan
+                StartCoroutine(ApplySlowEffect(other.gameObject));
             }
-
-            // Hancurkan mine setelah ledakan
-            Destroy(gameObject);
         }
+
+        // Hancurkan ranjau setelah meledak
+        Destroy(gameObject);
     }
 
-    private IEnumerator SlowDown(CarController carController)
+    private IEnumerator ApplySlowEffect(GameObject target)
     {
-        carController.m_Topspeed *= slowAmount;
-        yield return new WaitForSeconds(slowDuration);
-        carController.m_Topspeed /= slowAmount;
+        CarController vehicle = target.GetComponent<CarController>();
+        if (vehicle != null)
+        {
+            float originalSpeed = vehicle.m_Topspeed;
+            vehicle.m_Topspeed *= slowAmount;
+
+            yield return new WaitForSeconds(slowDuration);
+
+            vehicle.m_Topspeed = originalSpeed;
+        }
     }
 }
