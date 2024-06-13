@@ -9,7 +9,8 @@ public class Countdown : MonoBehaviour
     public AudioSource GetReady;
     public AudioSource GoAudio;
     public GameObject LapTimer;
-    [SerializeField] CarController[] cars;
+    public GameObject Blocker;
+    
 
     void Start()
     {
@@ -35,11 +36,7 @@ public class Countdown : MonoBehaviour
         CountDown.SetActive(true);
         yield return new WaitForSeconds(1);
         CountDown.SetActive(false);
+        Blocker.SetActive(false);
         GoAudio.Play();
-        foreach (var car in cars)
-        {
-            car.enabled = true;
-        }
-        // CarController.SetActive(true);
     }
 }

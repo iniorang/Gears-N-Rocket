@@ -6264,6 +6264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  currentHealth: 0
 --- !u!114 &6987957565822995141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6281,6 +6282,8 @@ MonoBehaviour:
   selected: 0
   launchPosition: {fileID: 1940335850641866295}
   rocketPrefab: {fileID: 2806045638652069399, guid: 54db315b8e6a16c4db685514cb438cde,
+    type: 3}
+  minePrefab: {fileID: 6641030279272371783, guid: 60835bfb4f9ef9d48a7cda168333e835,
     type: 3}
 --- !u!1 &4576385236122800106
 GameObject:

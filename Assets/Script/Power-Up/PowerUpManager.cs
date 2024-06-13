@@ -54,7 +54,7 @@ public class PowerUpManager : MonoBehaviour
                     Instantiate(rocketPrefab, launchPosition.position, launchPosition.rotation);
                     break;
                 case PowerBox.PowerType.Mine:
-                    Instantiate(minePrefab, launchPosition.position - new Vector3(0, .5f, 10f), launchPosition.rotation);
+                    Instantiate(minePrefab, launchPosition.position - new Vector3(0, 0f, 10f), launchPosition.rotation);
                     break;
                 case PowerBox.PowerType.Repair:
                     Debug.Log("Launch Repair");
